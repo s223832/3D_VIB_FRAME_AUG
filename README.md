@@ -1,4 +1,4 @@
-# 3D_VIB_FRAME_AUG
+# 3D VIB FRAME AUG
 (With changes for August 3 week course - s223832)
 A 3D finite element frame program built to determine the natural frequencies of a jacket foundation using beam elements. The program is tailored to the specific 20MW reference jacket structure from INWIND.EU but includes parametric variables to change the geometry. It was developed as part of the BSc project *"Developing a Digital Twin for the Dynamic Analysis of Jacket Foundations for Offshore Wind Turbines."*
 
