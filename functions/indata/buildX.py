@@ -105,7 +105,17 @@ def buildX(width_mudline, width_top, height, nn_levels, mill = False):
                             [0, 0, X[nn_levels*3, 2] + 6.14+16.26*7+17.17]])#           +14
         return X_full, X_mill
     
+    # Hardcoded for test purposes
     else:
-        X_trans = np.array([0, 0, X[nn_levels*3, 2]])                     # Center     +1
+        X_trans = np.array([[X_full[0, 0], X_full[0, 1], -0.077],                                                # Pile at nno 1 (+1)
+                            [X_full[1, 0], X_full[1, 1], -0.077],                                                # Pile at nno 2 (+2)
+                            [X_full[5 + (nn_levels-1)*3, 0], X_full[5 + (nn_levels-1)*3, 1], -0.077],            # Pile at nno 15 (+3)
+                            [X_full[8 + (nn_levels-1)*5, 0], X_full[8 + (nn_levels-1)*5, 1], -0.077],            # Pile at nno 24 (+4)
+                            #[0, 0, X[nn_levels*3, 2]]])                                                          # Center (+5)
+                            [X_full[nn_levels*3 - 1, 0], X_full[nn_levels*3 - 1, 1] - 0.0088, X_full[nn_levels*3 - 1, 2] + 0.092],       # Pile at nno 12 (+5)
+                            [X_full[nn_levels*3, 0] - 0.0088, X_full[nn_levels*3, 1], X_full[nn_levels*3, 2] + 0.092],                   # Pile at nno 13 (+6)
+                            [X_full[nn_levels*5 + 1, 0], X_full[nn_levels*5 + 1, 1] + 0.0088, X_full[nn_levels*5 + 1, 2] + 0.092],       # Pile at nno 22 (+7)
+                            [X_full[7*nn_levels + 2, 0] + 0.0088, X_full[7*nn_levels + 2, 1], X_full[7*nn_levels + 2, 2] + 0.092],       # Pile at nno 31 (+8)
+                            [0, 0, X[nn_levels*3, 2] + 0.092]])                                                                          # Center (+9) 
 
         return X_full, X_trans

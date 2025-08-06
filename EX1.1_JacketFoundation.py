@@ -33,7 +33,7 @@ dim_leg = np.array([[50, 1.5],             # Level A - leg [outer diameter,thick
 
 # Define steel material properties
 E = 205e9
-rho = 7850
+rho = 7870
 
 # Build mprop dictionary using mprop 
 mprop = mprop(nn_levels,dim_brace, dim_leg, E, rho, mill)

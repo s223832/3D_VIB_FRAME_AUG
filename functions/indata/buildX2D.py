@@ -24,7 +24,7 @@ def buildX2D(width_mudline, width_top, height, nn_levels):
     """
 
     # Define number of nodes and elements
-    nno = 5 + 3 * (nn_levels - 1)     # Total number of nodes
+    nno = 5 + 3 * (nn_levels - 1) + 4    # Total number of nodes
     
     # Initialize array
     X = np.zeros((nno,2))                           
@@ -59,5 +59,7 @@ def buildX2D(width_mudline, width_top, height, nn_levels):
             X[3*i + 2,:] = np.array([n2[0]-X[3+3*i,0], X[3+3*i,1]])
             # Coordinate for node 3*i + 4
             X[3*i + 4,:] = intersection(X[3*i - 1],X[3*i +3], X[3*i], X[3*i + 2])
+        
+
     return X
 
