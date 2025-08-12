@@ -45,12 +45,12 @@ def mprop(nn_levels, dim_brace, dim_leg, E, rho, mill = False):
     
     # Calculate shear modulus
     G = E/(2*(1+0.3))
-
+    
     # Calculate cross-sectional area, second moment area and torsinal constant
     for i in range(nn_levels):
         A_brace[i] = np.pi*((dim_brace[i,0] / 2)**2 - ((dim_brace[i,0] / 2 - dim_brace[i,1]))**2)
         A_leg[i] = np.pi*((dim_leg[i,0] / 2)**2 - ((dim_leg[i,0] / 2 - dim_leg[i,1]))**2)
-        Iyz_brace[i] = np.pi/4*((dim_brace[i,0] / 2)**4 - ((dim_brace[i,0] / 2 - dim_brace[i,1]))**4)
+        Iyz_brace[i] = (np.pi/4*((dim_brace[i,0] / 2)**4 - ((dim_brace[i,0] / 2 - dim_brace[i,1]))**4))
         Iyz_leg[i] = np.pi/4*((dim_leg[i,0] / 2)**4 - ((dim_leg[i,0] / 2 - dim_leg[i,1]))**4)
         J_brace[i] = np.pi/2*((dim_brace[i,0] / 2)**4 - ((dim_brace[i,0] / 2 - dim_brace[i,1]))**4)
         J_leg[i] = np.pi/2*((dim_leg[i,0] / 2)**4 - ((dim_leg[i,0] / 2 - dim_leg[i,1]))**4)
@@ -74,7 +74,9 @@ def mprop(nn_levels, dim_brace, dim_leg, E, rho, mill = False):
 
         for i in range(1, 10):
             mprop[nn_levels*2 + 1 + i] = {'E': E, 'A': A[i-1], 'rho': rho, 'Iy': I[i-1], 'Iz': I[i-1], 'J': J[i-1], 'G': 8.08e10, 'type': f'Tower element {i}'}
+    
     # If mill is not present, add only a transition piece for the mill
     else:
-        mprop[nn_levels*2 + 1] = {'E': E, 'A': 0.0024, 'rho': rho, 'Iy': 5.12e-6, 'Iz': 4.5e-8, 'J': 1.65e-7, 'G': G, 'type': f'Transition piece mill'}
+        mprop[nn_levels*2 + 1] = {'E': E, 'A': 0.00368, 'rho': rho, 'Iy': 5.41*1e-7, 'Iz': 2.05*1e-8, 'J': 7.53*1e-8, 'G': G, 'type': f'Transition piece mill'}
+
     return mprop

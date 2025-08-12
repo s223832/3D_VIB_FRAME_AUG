@@ -52,4 +52,4 @@ with open('indata_mprop.pkl', 'wb') as f:
     pickle.dump(mprop, f)
 
 ######################## Plot structure #########################
-plotindata(X,C)
+#plotindata(X, C)

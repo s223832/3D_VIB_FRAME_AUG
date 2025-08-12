@@ -62,9 +62,5 @@ def buildM(X, C, mprop, nno, nne, ldof, mill=False):
         Mmat[-5, -5] += 1730e3        # Mass of the RNA
         Mmat[-6, -6] += 1730e3        # Mass of the RNA
 
-    else:
-        Mmat[-4, -4] += 4.71           # Mass of top plate
-        Mmat[-5, -5] += 4.71           # Mass of top plate
-        Mmat[-6, -6] += 4.71           # Mass of top plate
 
     return Mmat

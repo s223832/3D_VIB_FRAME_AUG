@@ -133,24 +133,25 @@ def buildC(nn_levels, nne_per_beam, mill = False):
         return C, C_mill
     # If mill is not present, add only transition piece to jacket
     
-    else:
-        nno_max = (4+8*nn_levels) + (nne_per_beam-1)*20*nn_levels                # Total number of nodes
+    else: 
+        nno_max = (4+8*nn_levels) + (nne_per_beam-1)*20*nn_levels                  # Total number of nodes
+        # C_trans = np.array([[nn_levels*3, nno_max+1, nn_levels*2 + 1],           # Transion Braces
+        #                    [nn_levels*3+1, nno_max+1, nn_levels*2 + 1],
+        #                    [2+5*nn_levels, nno_max+1, nn_levels*2 + 1],
+        #                    [3+7*nn_levels, nno_max+1, nn_levels*2 + 1]])      
         C_trans = np.array([[1, nno_max+1, nn_levels + 1],                       # Pile at nno 1
                             [2, nno_max+2, nn_levels + 1],                       # Pile at nno 2
                             [6 + (nn_levels-1)*3, nno_max+3, nn_levels + 1],     # Pile at nno 15
                             [9 + (nn_levels-1)*5, nno_max+4, nn_levels + 1],     # Pile at nno 24
-                            [nn_levels*3, nno_max+5, nn_levels*2 + 1],           # Pile at nno 12 (top)
-                            [nn_levels*3+1, nno_max+6, nn_levels*2 + 1],         # Pile at nno 13 (top)
-                            [2+5*nn_levels, nno_max+7, nn_levels*2 + 1],         # Pile at nno 22 (top)
-                            [3+7*nn_levels, nno_max+8, nn_levels*2 + 1],         # Pile at nno 31 (top)
-                            [nno_max+5, nno_max+9, nn_levels*2 + 1],             # Transion Braces
-                            [nno_max+6, nno_max+9, nn_levels*2 + 1],
-                            [nno_max+7, nno_max+9, nn_levels*2 + 1],
-                            [nno_max+8, nno_max+9, nn_levels*2 + 1]])
-                            #[nn_levels*3, nno_max+5, nn_levels*2 + 1],           # Transion Braces
-                            #[nn_levels*3+1, nno_max+5, nn_levels*2 + 1],
-                            #[2+5*nn_levels, nno_max+5, nn_levels*2 + 1],
-                            #[3+7*nn_levels, nno_max+5, nn_levels*2 + 1]])
+                            [nn_levels*3, nno_max+5, nn_levels*2],               # Pile at nno 12 (top)
+                            [nn_levels*3+1, nno_max+6, nn_levels*2],             # Pile at nno 13 (top)
+                            [2+5*nn_levels, nno_max+7, nn_levels*2],             # Pile at nno 22 (top)
+                            [3+7*nn_levels, nno_max+8, nn_levels*2]])              # Pile at nno 31 (top)
+        
+                            #[nno_max+5, nno_max+9, nn_levels*2 + 1],             # Transition Braces
+                            #[nno_max+6, nno_max+9, nn_levels*2 + 1],
+                            #[nno_max+7, nno_max+9, nn_levels*2 + 1],
+                            #[nno_max+8, nno_max+9, nn_levels*2 + 1]])
         
         return C, C_trans
 
