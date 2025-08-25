@@ -1,7 +1,7 @@
 import numpy as np
 from functions.Mmat.mbeam import mbeam
 
-def buildM(X, C, mprop, nno, nne, ldof, mill=False):
+def buildM(X, C, mprop, nno, nne, ldof, TP=False):
     """
     Builds the system mass matrix from element mass matrices
 
@@ -19,8 +19,8 @@ def buildM(X, C, mprop, nno, nne, ldof, mill=False):
         Total number of elements
     ldof : int
         Number of degrees of freedom per node
-    mill : bool, optional
-        If True, the addition mass of the RNA is added to the mass matrix (default is False)
+    TP : bool, optional
+        If True, the additional mass and inertia is added to the mass matrix (default is False)
 
     Returns
     -------
@@ -35,7 +35,6 @@ def buildM(X, C, mprop, nno, nne, ldof, mill=False):
     for i in range(nne):
         # Define element properties
         propno = C[i,2]
-
         # Cross section area and material density
         Ge = [mprop[propno]['A'], mprop[propno]['rho'], mprop[propno]['J']]
 
@@ -54,12 +53,21 @@ def buildM(X, C, mprop, nno, nne, ldof, mill=False):
         # Add element stiffness matrix to system stiffness matrix
         Mmat[np.ix_(de - 1, de - 1)] += m
     
-    if mill == True:
-        Mmat[-1, -1] += 2919.66e6     # Rotational inertia of the RNA
-        Mmat[-2, -2] += 2919.66e6     # Rotational inertia of the RNA
-        Mmat[-3, -3] += 2919.66e6     # Rotational inertia of the RNA on phi_x
-        Mmat[-4, -4] += 1730e3        # Mass of the RNA
-        Mmat[-5, -5] += 1730e3        # Mass of the RNA
-        Mmat[-6, -6] += 1730e3        # Mass of the RNA
+    # Additional mass to footings
+    Mmat[6*116, 6*116] += 0.787
+    Mmat[6*116+1, 6*116+1] += 0.787
+    Mmat[6*116+2, 6*116+2] += 0.787
+
+    Mmat[6*117, 6*117] += 0.787
+    Mmat[6*117+1, 6*117+1] += 0.787
+    Mmat[6*117+2, 6*117+2] += 0.787
+
+    Mmat[6*118, 6*118] += 0.787
+    Mmat[6*118+1, 6*118+1] += 0.787
+    Mmat[6*118+2, 6*118+2] += 0.787
+
+    Mmat[6*119, 6*119] += 0.787
+    Mmat[6*119+1, 6*119+1] += 0.787
+    Mmat[6*119+2, 6*119+2] += 0.787
     
     return Mmat

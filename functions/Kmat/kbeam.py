@@ -16,7 +16,7 @@ def kbeam(n1, n2, Ge, PolDeg):
         Coordinate for node 2
     Ge : list
         Material properies for element 
-        list = [E, A, Iy, Iz, G, J]
+        list = [E, A, Iz, Iy, G, J]
     PolDeg : int
         Polynomial degree 
 

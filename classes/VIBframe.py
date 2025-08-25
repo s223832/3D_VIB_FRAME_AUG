@@ -43,12 +43,12 @@ class VIBframe():
         self.nne = np.size(C, 0)                # Total number of elements
         self.ndof = self.nno * self.ldof        # Total number of dofs
 
-        # Control if the mill is the last type in the dictionary (whether mill is present)
+        # Control if the transition piece is the last type in the dictionary (whether TP is present)
         last_type = None
         for d in mprop.values():
             if isinstance(d, dict) and 'type' in d:
                 last_type = d['type']
-        self.mill = (last_type == 'Tower element 9')
+        self.TP = (last_type == 'Transition piece')
 
         # Run analysis
         self.buildM()
@@ -58,7 +58,7 @@ class VIBframe():
     # Functions
     # Build the system mass matrix, M
     def buildM(self):
-        self.M = buildM(self.X, self.C, self.mprop, self.nno, self.nne, self.ldof, self.mill)
+        self.M = buildM(self.X, self.C, self.mprop, self.nno, self.nne, self.ldof, self.TP)
 
     # Build the system stiffness matrix, K
     def buildK(self):

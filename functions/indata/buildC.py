@@ -1,6 +1,6 @@
 import numpy as np
 
-def buildC(nn_levels, nne_per_beam, mill = False):
+def buildC(nn_levels, nne_per_beam, TP = False):
     """
     Function builds connectivity matrix with assignment of number according to material property
     for the 3D frame jacket foundation.
@@ -11,24 +11,23 @@ def buildC(nn_levels, nne_per_beam, mill = False):
         Number of levels
     nne_per_beam : int
         Number of elements per beam
-    mill : bool, optional
-        If True, the mill tower is included in the connectivity matrix (default is False)
-    
+    TP : bool, optional
+        If True, the transition piece is included in the connectivity matrix (default is False)
+
     Returns
     --------
     C : np.array
         Array of element connectivity and assignment of material properties
         np.array = [node number 1, node number 2, material property number] 
 
-    C_mill : np.array, optional
-        Array of connectivity for the mill tower, if mill is True
+    C_TP : np.array
+        Array of connectivity for the transition piece, if TP is True
         np.array = [node number 1, node number 2, material property number]
 
     """
 
     # Define number of elemements
     nne = 20 * nn_levels                        # Total number of elements
-    C_mill = None
 
     # Initialize 
     C = np.zeros((nne, 3), dtype=int)           # Connectivity matrix
@@ -106,37 +105,37 @@ def buildC(nn_levels, nne_per_beam, mill = False):
             C[idx_nne] = np.array([idx[3*i+4], idx[3*i+3], (i+1)])
             idx_nne += 1
 
-    # Add mill if present
-    if mill == True:
-        nno_max = (4+8*nn_levels) + (nne_per_beam-1)*20*nn_levels
-        C_mill = np.array([[nn_levels*3, nno_max+1, nn_levels*2 + 1],           # Transition Beams
-                           [nno_max+1, nn_levels*3+1, nn_levels*2 + 1],
-                           [nn_levels*3+1, nno_max+2, nn_levels*2 + 1],
-                           [nno_max+2, 2+5*nn_levels, nn_levels*2 + 1],
-                           [2+5*nn_levels, nno_max+3, nn_levels*2 + 1],
-                           [nno_max + 3, 3+7*nn_levels, nn_levels*2 + 1],
-                           [3+7*nn_levels, nno_max+4, nn_levels*2 + 1],
-                           [nno_max+4, nn_levels*3, nn_levels*2 + 1],
-                           [nn_levels*3, nno_max+5, nn_levels*2 + 1],           # Transion Braces
-                           [nn_levels*3+1, nno_max+5, nn_levels*2 + 1],
-                           [2+5*nn_levels, nno_max+5, nn_levels*2 + 1],
-                           [3+7*nn_levels, nno_max+5, nn_levels*2 + 1],
-                           [nno_max+5, nno_max+6, nn_levels*2 + 2],             # Mill Tower Elements
-                           [nno_max+6, nno_max+7, nn_levels*2 + 3],
-                           [nno_max+7, nno_max+8, nn_levels*2 + 4],
-                           [nno_max+8, nno_max+9, nn_levels*2 + 5],
-                           [nno_max+9, nno_max+10, nn_levels*2 + 6],            
-                           [nno_max+10, nno_max+11, nn_levels*2 + 7],
-                           [nno_max+11, nno_max+12, nn_levels*2 + 8],
-                           [nno_max+12, nno_max+13, nn_levels*2 + 9],
-                           [nno_max+13, nno_max+14, nn_levels*2 + 10]])
-        return C, C_mill
-    # If mill is not present, add only transition piece to jacket
-    else:
-        C_trans = np.array([])
+    # Add transition piece if present
+    if TP == True:
+       nno_max = (4+8*nn_levels) + (nne_per_beam-1)*20*nn_levels                 # Total number of nodes
+
+       C_TP = np.array([[1, nno_max+1, nn_levels + 1],                       # Pile 1 (bottom)
+                        [2, nno_max+2, nn_levels + 1],                       # Pile 2 (bottom)
+                        [6 + (nn_levels-1)*3, nno_max+3, nn_levels + 1],     # Pile 3 (bottom)
+                        [9 + (nn_levels-1)*5, nno_max+4, nn_levels + 1],     # Pile 4 (bottom)
+                        [nn_levels*3, nno_max+5, nn_levels*2],               # Pile 1 (top)
+                        [nn_levels*3+1, nno_max+6, nn_levels*2],             # Pile 2 (top)
+                        [2+5*nn_levels, nno_max+7, nn_levels*2],             # Pile 3 (top)
+                        [3+7*nn_levels, nno_max+8, nn_levels*2],             # Pile 4 (top)
+
+                        [nno_max+5, nno_max+9, nn_levels*2 + 1],             # Transition Braces
+                        [nno_max+6, nno_max+9, nn_levels*2 + 1],
+                        [nno_max+7, nno_max+9, nn_levels*2 + 1],
+                        [nno_max+8, nno_max+9, nn_levels*2 + 1]])
+    
+    # If transition piece is not present, add only piles
+    else: 
         nno_max = (4+8*nn_levels) + (nne_per_beam-1)*20*nn_levels                # Total number of nodes
-        C_trans = np.array([[nn_levels*3, nno_max+1, nn_levels*2 + 1],           # Transion Braces
-                            [nn_levels*3+1, nno_max+1, nn_levels*2 + 1],
-                            [2+5*nn_levels, nno_max+1, nn_levels*2 + 1],
-                            [3+7*nn_levels, nno_max+1, nn_levels*2 + 1]])
-        return C, C_trans
+
+        C_TP = np.array([[1, nno_max+1, nn_levels + 1],                          # Pile 1 (bottom)
+                            [2, nno_max+2, nn_levels + 1],                       # Pile 2 (bottom)
+                            [6 + (nn_levels-1)*3, nno_max+3, nn_levels + 1],     # Pile 3 (bottom)
+                            [9 + (nn_levels-1)*5, nno_max+4, nn_levels + 1],     # Pile 4 (bottom)
+                            [nn_levels*3, nno_max+5, nn_levels*2],               # Pile 1 (top)
+                            [nn_levels*3+1, nno_max+6, nn_levels*2],             # Pile 2 (top)
+                            [2+5*nn_levels, nno_max+7, nn_levels*2],             # Pile 3 (top)
+                            [3+7*nn_levels, nno_max+8, nn_levels*2]])            # Pile 4 (top)
+
+
+    return C, C_TP
+

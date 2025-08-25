@@ -44,7 +44,7 @@ def buildK(X, C, mprop, spring_support, nno, nne, ldof):
 
         # Define element stiffness matrix
         k = kbeam(n1,n2,Ge,3)
-        
+
         # Define element degrees of freedom
         de = np.array([6*C[i,0]-5, 6*C[i,0]-4, 6*C[i,0]-3, 6*C[i,0]-2, 6*C[i,0]-1, 6*C[i,0],
                        6*C[i,1]-5, 6*C[i,1]-4, 6*C[i,1]-3, 6*C[i,1]-2, 6*C[i,1]-1, 6*C[i,1]])

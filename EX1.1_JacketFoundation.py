@@ -9,14 +9,13 @@ from functions.indata.mprop import mprop
 from functions.plot.plotconnectivity import plotindata
 
 ####################### Define properties #######################
-# Coordinates of base variables for the jacket foundation
+# Coordinates of base variables for the jacket 
 width_mudline = 0.753            # Width of the structure at mudline
 width_top = 0.406                # Width of the structure at top
 height = 1.27                    # Height of the structure
 nn_levels = 4                    # Number of levels
-nne_per_beam = 1                 # Number of elements per beam
-mill = False                     # Mill present (True/False)
-
+nne_per_beam = 2                 # Number of elements per beam
+TP = False                        # TP present (True/False)
 
 ################## Build property dictionary ##################
 # Rod dimensions [outerdiameter, thicknes] (SI-units)
@@ -32,15 +31,15 @@ dim_leg = np.array([[50, 1.5],             # Level A - leg [outer diameter,thick
 
 
 # Define steel material properties
-E = 205e9
-rho = 7850
+E = 205e9 # Note that E is set differently for braces and legs in mprop
+G = E/(2*(1 + 0.29))
+rho = 7870
 
 # Build mprop dictionary using mprop 
-mprop = mprop(nn_levels,dim_brace, dim_leg, E, rho, mill)
+mprop = mprop(nn_levels,dim_brace, dim_leg, E, G, rho, TP)
 
 ####################### Define structure #######################
-X, C = indata(width_mudline, width_top, height, nn_levels, nne_per_beam, mill)
-
+X, C = indata(width_mudline, width_top, height, nn_levels, nne_per_beam, TP)
 
 ####################### Store and load data ####################
 # Saving numpys
@@ -52,4 +51,4 @@ with open('indata_mprop.pkl', 'wb') as f:
     pickle.dump(mprop, f)
 
 ######################## Plot structure #########################
-plotindata(X,C)
+plotindata(X, C)
