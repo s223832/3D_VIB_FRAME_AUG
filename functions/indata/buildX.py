@@ -2,7 +2,7 @@ import numpy as np
 from math import atan, cos, sin, pi, sqrt
 from functions.indata.buildX2D import buildX2D
 
-def buildX(width_mudline, width_top, height, nn_levels, mill = False):
+def buildX(width_mudline, width_top, height, nn_levels, TP = False):
     """
     Function to build the node coordinates for the jacket foundation in 3D for the FE frame program.
     Utilizes the 2D geometry from buildX2D and rotates it to create a 3D jacket structure.
@@ -19,17 +19,17 @@ def buildX(width_mudline, width_top, height, nn_levels, mill = False):
         Number of levels
     nne_per_beam: int
         Number of elements per beam
-    mill : bool, optional
-        If True, the mill tower is included in the coordinates (default is False)
+    TP : bool, optional
+        If True, the transition piece is included in the coordinates (default is False)
 
     Returns
     --------
     X_full : np.array
         Array of node coordinates in global coordinates for jacket structure
         np.array = [x, y, z] for each node in the jacket foundation
-    X_mill : np.array, optional
-        Array of mill coordinates, if mill is True
-        np.array = [x, y, z] for each node in the mill tower
+    X_TP : np.array
+        Array of transition piece coordinates, if TP is True
+        np.array = [x, y, z] for each node in the transition piece
     """
 
     ########### Calculation for one side of the jacket ##############
@@ -42,7 +42,6 @@ def buildX(width_mudline, width_top, height, nn_levels, mill = False):
     
     # Import the 2D geometry 
     X = buildX2D(width_mudline, width_top, height_xz, nn_levels)
-    X_mill = None
 
     # Add the y-coordinate and a zeros vector
     zeros_col = np.zeros((X.shape[0],1))
@@ -82,41 +81,32 @@ def buildX(width_mudline, width_top, height, nn_levels, mill = False):
     X_uni, indices = np.unique(X_full, axis=0, return_index=True)
     X_full = X_uni[np.argsort(indices)]
 
-    # Add mill if present
-    if mill == True:
-        # Add mill coordinates
-        def midpoint_3d(node1, node2):
-            inter = (X_full[node1-1] + X_full[node2-1]) / 2
-            return [inter[0], inter[1], inter[2]]
-
-        X_mill = np.array([midpoint_3d(nn_levels*3, nn_levels*3+1),         # 3 & 4     +1
-                           midpoint_3d(nn_levels*3+1, 2+5*nn_levels),       # 4 & 7     +2
-                           midpoint_3d(2+5*nn_levels, 3+7*nn_levels),       # 7 & 10    +3
-                           midpoint_3d(3+7*nn_levels, nn_levels*3),         # 10 & 3    +4
-                            [0, 0, X[nn_levels*3, 2]],                      # TOWER     +5
-                            [0, 0, X[nn_levels*3, 2] + 6.14],               # TOWER     +6
-                            [0, 0, X[nn_levels*3, 2] + 6.14+16.26*1],       #           +7    
-                            [0, 0, X[nn_levels*3, 2] + 6.14+16.26*2],       #           +8
-                            [0, 0, X[nn_levels*3, 2] + 6.14+16.26*3],       #           +9
-                            [0, 0, X[nn_levels*3, 2] + 6.14+16.26*4],       #           +10
-                            [0, 0, X[nn_levels*3, 2] + 6.14+16.26*5],       #           +11    
-                            [0, 0, X[nn_levels*3, 2] + 6.14+16.26*6],       #           +12
-                            [0, 0, X[nn_levels*3, 2] + 6.14+16.26*7],       #           +13
-                            [0, 0, X[nn_levels*3, 2] + 6.14+16.26*7+17.17]])#           +14
-        return X_full, X_mill
-    
-    # Hardcoded for test purposes
-    else:
-        X_trans = np.array([
-                            [X_full[0, 0], X_full[0, 1], -0.06592],                                                # Pile at nno 1 (+1)
-                            [X_full[1, 0], X_full[1, 1], -0.06592],                                                # Pile at nno 2 (+2)
-                            [X_full[5 + (nn_levels-1)*3, 0], X_full[5 + (nn_levels-1)*3, 1], -0.06592],            # Pile at nno 15 (+3)
-                            [X_full[8 + (nn_levels-1)*5, 0], X_full[8 + (nn_levels-1)*5, 1], -0.06592],            # Pile at nno 24 (+4)
+    # Add transition piece if present
+    if TP == True:
+        X_TP = np.array([
+                            [X_full[0, 0], X_full[0, 1], -0.06592],                                                                        # Pile at nno 1 (+1)
+                            [X_full[1, 0], X_full[1, 1], -0.06592],                                                                        # Pile at nno 2 (+2)
+                            [X_full[5 + (nn_levels-1)*3, 0], X_full[5 + (nn_levels-1)*3, 1], -0.06592],                                    # Pile at nno 15 (+3)
+                            [X_full[8 + (nn_levels-1)*5, 0], X_full[8 + (nn_levels-1)*5, 1], -0.06592],                                    # Pile at nno 24 (+4)
 
                             [X_full[nn_levels*3 - 1, 0], X_full[nn_levels*3 - 1, 1] - 0.01447, X_full[nn_levels*3 - 1, 2] + 0.10592],      # Pile at nno 12 (+5)
                             [X_full[nn_levels*3, 0] - 0.01447, X_full[nn_levels*3, 1], X_full[nn_levels*3, 2] + 0.10592],                  # Pile at nno 13 (+6)
                             [X_full[nn_levels*5 + 1, 0], X_full[nn_levels*5 + 1, 1] + 0.01447, X_full[nn_levels*5 + 1, 2] + 0.10592],      # Pile at nno 22 (+7)
-                            [X_full[7*nn_levels + 2, 0] + 0.01447, X_full[7*nn_levels + 2, 1], X_full[7*nn_levels + 2, 2] + 0.10592],      # Pile at nno 31 (+8)
-                            [0, 0, X[nn_levels*3, 2] + 0.10592]])                                                                          # Center (+9) 
+                            [X_full[7*nn_levels + 2, 0] + 0.01447, X_full[7*nn_levels + 2, 1], X_full[7*nn_levels + 2, 2] + 0.10592],     # Pile at nno 31 (+8)
+                            [0, 0, X[nn_levels*3, 2] + 0.10592]])                                                                          # Center (+9)
+    
+        return X_full, X_TP
 
-        return X_full, X_trans
+    else:
+        X_TP = np.array([
+                            [X_full[0, 0], X_full[0, 1], -0.06592],                                                                        # Pile at nno 1 (+1)
+                            [X_full[1, 0], X_full[1, 1], -0.06592],                                                                        # Pile at nno 2 (+2)
+                            [X_full[5 + (nn_levels-1)*3, 0], X_full[5 + (nn_levels-1)*3, 1], -0.06592],                                    # Pile at nno 15 (+3)
+                            [X_full[8 + (nn_levels-1)*5, 0], X_full[8 + (nn_levels-1)*5, 1], -0.06592],                                    # Pile at nno 24 (+4)
+
+                            [X_full[nn_levels*3 - 1, 0], X_full[nn_levels*3 - 1, 1] - 0.01447, X_full[nn_levels*3 - 1, 2] + 0.10592],      # Pile at nno 12 (+5)
+                            [X_full[nn_levels*3, 0] - 0.01447, X_full[nn_levels*3, 1], X_full[nn_levels*3, 2] + 0.10592],                  # Pile at nno 13 (+6)
+                            [X_full[nn_levels*5 + 1, 0], X_full[nn_levels*5 + 1, 1] + 0.01447, X_full[nn_levels*5 + 1, 2] + 0.10592],      # Pile at nno 22 (+7)
+                            [X_full[7*nn_levels + 2, 0] + 0.01447, X_full[7*nn_levels + 2, 1], X_full[7*nn_levels + 2, 2] + 0.10592]])     # Pile at nno 31 (+8)                                                                          # Center (+9) 
+
+        return X_full, X_TP

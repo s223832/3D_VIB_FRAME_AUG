@@ -2,7 +2,7 @@ import numpy as np
 from functions.indata.buildC import buildC
 from functions.indata.buildX import buildX
 
-def indata(width_mudline, width_top, height, nn_levels, nne_per_beam, mill = False):
+def indata(width_mudline, width_top, height, nn_levels, nne_per_beam, TP = False):
     """
     Function to build the input data, both node coordinate matrix and connectivity matrix for 
     the jacket foundation in 3D for the FE frame program. Creates subdivision of beam elements. 
@@ -20,8 +20,8 @@ def indata(width_mudline, width_top, height, nn_levels, nne_per_beam, mill = Fal
         Number of levels
     nne_per_beam: int
         Number of elements per beam
-    mill : bool, optional
-        If True, the mill tower is included in the coordinates and connectivity (default is False)
+    TP : bool, optional
+        If True, the transition piece is included in the coordinates and connectivity (default is False)
 
     Returns
     --------
@@ -32,9 +32,9 @@ def indata(width_mudline, width_top, height, nn_levels, nne_per_beam, mill = Fal
     """
 
     # Node coordinates and connectivity matrix
-    X, X_mill = buildX(width_mudline, width_top, height, nn_levels, mill)
-    C, C_mill = buildC(nn_levels, nne_per_beam, mill)
-    
+    X, X_TP = buildX(width_mudline, width_top, height, nn_levels, TP)
+    C, C_TP = buildC(nn_levels, nne_per_beam, TP)
+
     nno = X.shape[0]            # Number of nodes
     nne = C.shape[0]            # Number of elements
 
@@ -84,9 +84,9 @@ def indata(width_mudline, width_top, height, nn_levels, nne_per_beam, mill = Fal
                 X_full = np.vstack((X_full, X_i))
                 C_full = np.vstack((C_full, C_i))
 
-    # Add the mill coordinates and connectivity to the full matrices
-    if X_mill.size > 0:
-        X_full = np.vstack((X_full, X_mill))
-        C_full = np.vstack((C_full, C_mill))
+    # Add the transition piece coordinates and connectivity to the full matrices
+    if X_TP.size > 0:
+        X_full = np.vstack((X_full, X_TP))
+        C_full = np.vstack((C_full, C_TP))
 
     return X_full, C_full
